@@ -1,37 +1,295 @@
 ---
-title: "Modelo Projeto - Quarto"
-
-# Nome do documento PDF gerado
-output-file: titulo do projeto
+title: "Projeto do Renan"
 ---
-```{r}
-#| include: false
-source("rdocs/source/packages.R")
-```
 
-
-```{r}
+```{r,echo=FALSE,message=FALSE, warning=FALSE}
 # Rodar apenas uma vez na vida!
 ## Instalando o tinytex(pacote apenas)
 ### CRAN version
-install.packages('tinytex')
+
 
 ### or the development version on GitHub
-remotes::install_github('rstudio/tinytex')
+
 
 ## Baixando o tinytex
 library(tinytex)
-tinytex::install_tinytex()
-
 
 ```
 
-
-
 # Introdução
+
+Este projeto tem como objetivo 
+A fim de atender a demanda do cliente, foi feita uma análise estatistica descritiva acerca dos atletas que participaram das olimpiadas dos anos de 2000 até 2016.
+
+O banco de dados foi disponibilizado pelo cliente. Foi observado nome, sexo, idade, país, peso, altura, esporte, modalidade e medalha adquirida de 38366 atletas diferentes.
+
+A manipulação e análise dos dados além da confecção das figuras foram feitas com auxilio do software estatístico R versão 4.3.3.
 
 # Referencial Teórico
 
 # Análises
+
+### 1. Top 5 países com maior número de mulheres medalistas
+
+Está análise tem o intuito de identificar quais são os países com maior quantidade de mulheres medalhistas. Para isso foram utilizadas as variáveis sexo e medalhas, a primeira sendo qualitativa nominal e a sugunda sendo qualitativa ordinal.
+
+#### Figura 1: gráfico de colunas do número de mulheres medalistas
+
+```{r,echo=FALSE,message=FALSE, warning=FALSE,}
+library(readxl)
+library(tidyverse)
+theme_estat <- function(...) {
+  theme <- ggplot2::theme_bw() +
+    ggplot2::theme(
+      axis.title.y = ggplot2::element_text(colour = "black", size = 12),
+      axis.title.x = ggplot2::element_text(colour = "black", size = 12),
+      axis.text = ggplot2::element_text(colour = "black", size = 9.5)
+      ,
+      panel.border = ggplot2::element_blank(),
+      axis.line = ggplot2::element_line(colour = "black"),
+      legend.position = "top",
+      ...
+    )
+  return(
+    list(
+      theme,
+      scale_fill_manual(values = estat_colors),
+      scale_colour_manual(values = estat_colors)
+    )
+  )
+}
+###########
+print_quadro_resumo <- function(data, var_name, title="Medidas resumo
+da(o) [nome da variável]", label="quad:quadro_resumo1")
+{
+  var_name <- substitute(var_name)
+  data <- data %>%
+    summarize(`Média` = round(mean(!!sym(var_name)),2),
+              `Desvio Padrão` = round(sd(!!sym(var_name)),2),
+              `Variância` = round(var(!!sym(var_name)),2),
+              `Mínimo` = round(min(!!sym(var_name)),2),
+              `1º Quartil` = round(quantile(!!sym(var_name), probs =
+                                              .25,na.rm = TRUE),2),
+              `Mediana` = round(quantile(!!sym(var_name), probs = .5,na.rm = TRUE)
+                                ,2),
+              `3º Quartil` = round(quantile(!!sym(var_name), probs =
+                                              .75,na.rm = TRUE),2),
+              `Máximo` = round(max(!!sym(var_name)),2)) %>%
+    t() %>%
+    as.data.frame() %>%
+    rownames_to_column()
+  latex <- str_c("\\begin{quadro}[H]
+\t\\caption{", title, "}
+\t\\centering
+\t\\begin{adjustbox}{max width=\\textwidth}
+\t\\begin{tabular}{", sep="")
+  col_count <- ncol(data)
+  row_count <- nrow(data)
+  latex <- str_c(latex, "| l |\n", sep=" ")
+  for (i in seq(2, col_count))
+  {
+    numCount <- data[i, -c(1)] %>%
+      as.numeric() %>%
+      {floor(log10(.)) + 1} %>%
+      max()
+    latex <- str_c(latex, "\t\t\tS[table-format = ", numCount ,".2]\n
+", sep="")
+  }
+  latex <- str_c(latex, "\t\t\t|}\n\t\\toprule\n\t\t", sep="")
+  if (col_count > 2)
+  {
+    for (i in seq(1,col_count))
+    {
+      if (i == 1)
+        latex <- str_c(latex, "\\textbf{Estatística}", sep="")
+      else
+        latex <- str_c(latex, " \\textbf{", data[1, i], "}", sep="")
+      if (i < col_count)
+        latex <- str_c(latex, "&", sep=" ")
+      else
+        latex <- str_c(latex, "\\\\\n", sep=" ")
+    }
+  }
+  else
+  {
+    latex <- str_c(latex, "\\textbf{Estatística} & \\textbf{Valor}
+\\\\\n", sep="")
+  }
+  latex <- str_c(latex, "\t\t\\midrule\n", sep="")
+  if (col_count > 2)
+    starting_number <- 2
+  else
+    starting_number <- 1
+  for (i in seq(starting_number, row_count))
+  {
+    latex <- str_c(latex, "\t\t", str_flatten(t(data[i,]), collapse =
+                                                " & "), " \\\\\n")
+  }
+  latex <- str_c(latex, "\t\\bottomrule
+  \t\\end{tabular}
+\t\\label{", label, "}
+\t\\end{adjustbox}
+\\end{quadro}", sep="")
+  writeLines(latex)
+}
+########################
+estat_colors <- c(
+  "#A11D21", "#003366", "#CC9900",
+  "#663333", "#FF6600", "#CC9966",
+  "#999966", "#006606", "#008091",
+  "#041835", "#666666" )
+#tratamento do banco##################################
+P1<-read_excel("C:/Users/marqu/Documents/Estat/Olimpiadas 2000 - 2016.xlsx", sheet=1, col_names=TRUE)
+colnames(P1)<-c("Nome","Sexo","Idade","Altura(m)","Peso(kg)","País","Esporte","Modalidade","Medalha")
+P2<-read_excel("C:/Users/marqu/Documents/Estat/Olimpiadas 2000 - 2016.xlsx", sheet=2, col_names=TRUE)
+colnames(P2)<-c("Nome","Sexo","Idade","Altura(m)","Peso(kg)","País","Esporte","Modalidade","Medalha")
+P3<-read_excel("C:/Users/marqu/Documents/Estat/Olimpiadas 2000 - 2016.xlsx", sheet=3, col_names=TRUE)
+colnames(P3)<-c("Nome","Sexo","Idade","Altura(m)","Peso(kg)","País","Esporte","Modalidade","Medalha")
+P4<-read_excel("C:/Users/marqu/Documents/Estat/Olimpiadas 2000 - 2016.xlsx", sheet=4, col_names=TRUE)
+colnames(P4)<-c("Nome","Sexo","Idade","Altura(m)","Peso(kg)","País","Esporte","Modalidade","Medalha")
+P5<-read_excel("C:/Users/marqu/Documents/Estat/Olimpiadas 2000 - 2016.xlsx", sheet=5, col_names=TRUE)
+colnames(P5)<-c("Nome","Sexo","Idade","Altura(m)","Peso(kg)","País","Esporte","Modalidade","Medalha")
+P<-rbind(P1,P2,P3,P4,P5)
+P<-P[!(is.na(P[,9])),]
+P$`Altura(m)`<-P$`Altura(m)`/100
+P$`Peso(kg)`<-P$`Peso(kg)`/2.205
+#Analise 1########################################################
+PF<-P[P[,2]=="F",]
+PF<-PF[!duplicated(PF$Nome),]
+classes <- PF %>%
+  filter(!is.na(País)) %>%
+  count(País) %>%
+  mutate(
+    freq = n,
+    relative_freq = round((freq / sum(freq)) * 100, 1),
+    freq = gsub("\\.", ",", relative_freq) %>% paste("%", sep = ""),
+    label = str_c(n, " (", freq, ")") %>% str_squish()
+  )
+c<-classes %>% filter(relative_freq>5)
+c[c(c[,1]=="United States"),1]<-"Estados Unidos"
+c[c(c[,1]=="Germany"),1]<-"Alemanha"
+Figura1<-ggplot(c)+aes(x = fct_reorder(País, n, .desc=T), y = n, label = label) +
+  geom_bar(stat = "identity", fill = "#A11D21", width = 0.7)+geom_text(position = position_dodge(width = .9),vjust = -0.5,size = 3)+theme_estat()+labs(x="Países",y="Frequência")
+Figura1
+####################################################################################
+```
+
+Como pode ser observado na figura 1, o ranque é formado por Estados unidos, Rússia, China, Australia e Alemanha respectivamente. Os Estados Unidos ocupa o primeiro lugar do ranque com mais de 100 medalhas de diferença da Rússia. Juntos esses 5 países sozinhos tem 43,7% das mulheres medalistas.
+
+### 2. IMC por esportes
+
+Essa análise tem como objetivo entender o comportamento do IMC nos esportes selecionados. Para tal, foram utilizadas as variáveis esporte e IMC,respectivamente qualitativa nominal e quantitativa continua. A variável IMC foi obtida dividindo o peso do atleta pela altura ao quadrado.O valor do índice de massa corporal(IMC) é um importante indicador da saúde de uma pessoa. o número representa o quanto a pessoa tem de massa muscular + massa de gordura + massa óssea.
+
+#### Figura 2: Boxplot do IMC pelo Esporte
+
+```{r,echo=FALSE,message=FALSE, warning=FALSE}
+PM<-P[!(is.na(P[,9])),]
+PMD<-PM[!duplicated(PM$Nome),]
+PMD$IMC<-PMD$`Peso(kg)`/(PMD$`Altura(m)`)^2
+PA2<-PMD[PMD[,7]==c("Badminton","Judo","Gymnastics","Athletics","Football"),]
+PA2[c(PA2[,7]=="Athletics"),7]<-"Atletismo"
+PA2[c(PA2[,7]=="Gymnastics"),7]<-"Ginastica"
+PA2[c(PA2[,7]=="Football"),7]<-"Futebol"
+ggplot(PA2)+aes(x=fct_reorder(Esporte, IMC, "median"),y=IMC)+geom_boxplot(fill = c("#A11D21"), width = 0.5)+theme_estat()+stat_summary(fun = "mean", geom = "point", shape = 23, size = 3, fill = "white")+xlab("Esporte")
+```
+
+#### Figura 3
+
+```{r,echo=FALSE,message=FALSE, warning=FALSE}
+Tabela<-PA2%>%group_by(Esporte)
+print_quadro_resumo(Tabela,var_name = IMC)
+```
+
+Pode se observar que o IMC segue um comportamento diferente para cada esporte. No judô há diversas categorias para pessoas com pesos diferentes e é um esporte que exige maior massa muscular, o que explica a maior dispersão dos dados (Desvio padrão=6.24) e uma média elevada(26.78) se comparada com as dos outros esportes. A medida de centralidade média no Badminton, na Ginastica, no futebol e no Atletismo são semelhantes: 22.17, 20.76, 22.72 e 22.12 respectivamente, entretanto cada um tem uma configuração única. No atletismo há uma assimetria positiva, na ginastica há uma assimetria negativa e no badminton e no futebol a distribuição é simetrica e centralizada(desvio padrão=1.61). Em geral, quanto mais um esporte ou modalidade exige massa muscular, maior o IMC.
+
+### 3. Top 3 medalhistas gerais
+
+Esta análise tem como objetivo observar quais são os 3 maiores medalhistas e verificar se há relação entre o medalhista e o tipo de medalha conquistada. Os três atletas que conquistaram mais medalhas nessas 5 edições dos jogos olímpicos foram: Michael Fred Phelps com 28 medalhas, Natalie Anne Coughlin e Ryan Steven Lochte ambos com 12 medalhas. Os três são estadunidenses e tem como esporte a natação.
+
+#### Figura 4: Gráfico de colunas da quantidade de medalhas pelo tipo da medalha
+
+```{r,echo=FALSE,message=FALSE, warning=FALSE}
+PA3.1<-P[P[,1]=="Michael Fred Phelps, II",]
+PA3.2<-P[P[,1]=="Natalie Anne Coughlin (-Hall)",]
+PA3.3<-P[P[,1]=="Ryan Steven Lochte",]
+PA3<-rbind(PA3.1,PA3.2,PA3.3)
+PA3[c(PA3[,9]=="Gold"),9]<-"Ouro"
+PA3[c(PA3[,9]=="Silver"),9]<-"Prata"
+GA3 <- PA3 %>%
+  mutate(Nome = case_when(
+    Nome %>% str_detect("Michael Fred Phelps, II") ~ "Michael Fred Phelps, II",
+    Nome %>% str_detect("Ryan Steven Lochte") ~ "Ryan Steven Lochte",
+    Nome %>% str_detect("Natalie Anne Coughlin (-Hall)") ~ "Natalie Anne Coughlin (-Hall)"
+  )) %>%
+  group_by(Nome, Medalha ) %>%
+  summarise(freq = n()) %>%
+  mutate(
+    freq_relativa = round(freq / sum(freq) * 100,1)
+  )
+GA3[c(is.na(GA3[,1])==TRUE),1]<-"Natalie Anne Coughlin (-Hall)"
+porcentagens <- str_c(GA3$freq_relativa, "%") %>% str_replace("
+\\.", ",")
+legendas <- str_squish(str_c(GA3$freq, " (", porcentagens, ")")
+)
+ordem<-c("Bronze","Prata","Ouro")
+GA3$Medalha<-fct_relevel(c(GA3$Medalha),ordem)
+ggplot(GA3) +
+  aes(
+    x = fct_reorder(Nome, Nome, .desc = T), y = freq,
+    fill = Medalha, label = legendas
+  ) +
+  geom_col(position = position_dodge2(preserve = "single", padding =
+                                        0)) +
+  geom_text(
+    position = position_dodge(width = .9),
+    vjust = -0.5, hjust = 0.5,
+    size = 3
+  ) +
+  labs(x = "Atleta", y = "Frequência") +
+  theme_estat()
+```
+
+Observa-se pelo gráfico a relação entre o atleta e o tipo de medalha. Conforme o valor da medalha aumentou, Natalie conquistou menos medalhas, enquanto para Michael e Ryan o comportamento foi o contrário. Também é possivel observar que a grande maioria das medalhas que Michael Fred Phelps conquistou foram medalhas de ouro.
+
+### 4. Relação peso x altura
+
+Esta análise tem o intuito de compreender a relação entre o peso e a altura dos atletas. Para isso, foi utilizado as variáveis peso(Kg) e altura(m), ambas são quantitativas continuas. O comportamento conjunto das variáveis está ilustrado pelo gráfico de dispersão a seguir:
+
+#### Figura 5: Gráfico de dispersão do peso pela altura do atleta
+
+```{r,echo=FALSE,message=FALSE, warning=FALSE}
+ggplot(PMD)+geom_point(aes(x=`Peso(kg)`,y=`Altura(m)`),colour = "#A11D21",size = 2,alpha=0.5)+theme_estat()
+```
+
+#### Quadro 2: Medidas resumo das variáveis peso e altura do atleta
+
+```{=latex}
+\begin{quadro}[H]
+	\caption{Medidas resumo
+da(o) [nome da variável]}
+	\centering
+	\begin{adjustbox}{max width=\textwidth}
+	\begin{tabular}{ | l | c |}
+	\toprule
+		\textbf{Estatística} & \textbf{Valor}
+\\
+		\midrule
+		Média & 74.14 \\
+		Desvio Padrão & 16.25 \\
+		Variância & 264.05 \\
+		Mínimo & 28 \\
+		1º Quartil & 62.99 \\
+		Mediana & 71.99 \\
+		3º Quartil & 83.99 \\
+		Máximo & 174.97 \\
+	\bottomrule
+  	\end{tabular}
+	\label{quad:quadro_resumo1}
+	\end{adjustbox}
+\end{quadro}
+```
+
+
+Os atletas tem, em geral, peso entre 63 e 84 quilos e altura entre 1.70 e 1.86 metros, além disso o peso dos atletas varia mais que a altura(coeficiente de variação 0.21 e 0.06 respectivamente) . O coeficiente de Pearson, que mostra a força e o sentido da associação de duas variaveis quantitativas e varia de -1 a 1, assumiu o valor 0.79, ou seja, observa se pelo gráfico e pelo coeficiente uma relação forte e positiva entre as variáveis, conforme a altura aumenta o peso tende a aumentar.
 
 # Conclusões
