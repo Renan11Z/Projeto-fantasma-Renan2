@@ -268,7 +268,6 @@ ggplot(PMD)+geom_point(aes(x=`Peso(kg)`,y=`Altura(m)`),colour = "#A11D21",size =
 	\caption{Medidas resumo
 da(o) [nome da variável]}
 	\centering
-	\begin{adjustbox}{max width=\textwidth}
 	\begin{tabular}{ | l | c |}
 	\toprule
 		\textbf{Estatística} & \textbf{Valor}
@@ -285,7 +284,6 @@ da(o) [nome da variável]}
 	\bottomrule
   	\end{tabular}
 	\label{quad:quadro_resumo1}
-	\end{adjustbox}
 \end{quadro}
 ```
 
