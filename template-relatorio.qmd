@@ -18,11 +18,11 @@ library(tinytex)
 
 # Introdução
 
-Este projeto tem como objetivo compreender melhor os fatores que afetam a performance dos atletas. Para isso, foi feita uma análise estatistica descritiva acerca dos atletas que participaram das olimpiadas dos anos de 2000 até 2016. Foi estudado: O top 5 países com maior número de mulheres medalhistas, o comportamento do índice de massa corporal(IMC) nos esportes selecionados, o top 3 medalhistas gerais e a relação entre o peso e a altura dos atletas
+Este projeto tem como objetivo compreender melhor os fatores que afetam a performance dos atletas. Para isso, foi feita uma análise estatistica descritiva acerca dos atletas que participaram das olimpíadas dos anos de 2000 até 2016. Foi estudado: O top 5 países com maior número de mulheres medalhistas, o comportamento do índice de massa corporal (IMC) nos esportes selecionados, o top 3 medalhistas gerais e a relação entre o peso e a altura dos atletas.
 
-O banco de dados foi disponibilizado pelo cliente. Foi observado nome, sexo, idade, país, peso, altura, esporte, modalidade e medalha adquirida de 38366 atletas diferentes. Desses atletas, as análises desse relatório consideraram apenas os atletas medalhistas: 7294 atletas diferentes no total.
+O banco de dados foi disponibilizado pelo cliente. Foi observado Nome, Sexo, Idade, País, Peso, Altura, Esporte, Modalidade e Medalha adquirida de 38366 atletas diferentes. Desses atletas, as análises desse relatório consideraram apenas os atletas medalhistas: 7294 atletas diferentes no total.
 
-A manipulação e análise dos dados além da confecção das figuras foram feitas com auxilio do software estatístico R versão 4.3.3.
+A manipulação e análise dos dados, além da confecção das figuras, foram feitas com auxilio do software estatístico RStudio versão 2024.04.2. O pdf do relatório foi gerado utilizando o Quarto.
 
 # Referencial Teórico
 
@@ -216,7 +216,7 @@ Vale ressaltar que o coeficiente de Pearson é paramétrico e, portanto, sensív
 
 ## Top 5 países com maior número de mulheres medalistas
 
-Está análise tem o intuito de identificar quais são os países com maior quantidade de mulheres medalhistas. Para isso foram utilizadas as variáveis sexo e medalhas, a primeira sendo qualitativa nominal e a sugunda sendo qualitativa ordinal. Para ilustrar a análise sera utilizado um gráfico de barras.
+Está análise tem o intuito de identificar quais são os países com maior quantidade de mulheres medalhistas. Para isso foram utilizadas as variáveis Sexo e Medalhas, a primeira sendo qualitativa nominal e a segunda sendo qualitativa ordinal. Para ilustrar a análise sera utilizado um gráfico de barras.
 
            
 
@@ -280,24 +280,23 @@ c<-classes %>% filter(relative_freq>5)
 c[c(c[,1]=="United States"),1]<-"Estados Unidos"
 c[c(c[,1]=="Germany"),1]<-"Alemanha"
 Figura1<-ggplot(c)+aes(x = fct_reorder(País, n, .desc=T), y = n, label = label) +
-  geom_bar(stat = "identity", fill = "#A11D21", width = 0.7)+geom_text(position = position_dodge(width = .9),vjust = -0.5,size = 3)+theme_estat()+labs(x="Países",y="Frequência")+ggtitle("Figura 1: gráfico de colunas do número de mulheres medalistas")
+  geom_bar(stat = "identity", fill = "#A11D21", width = 0.7)+geom_text(position = position_dodge(width = .9),vjust = -0.5,size = 3)+theme_estat()+labs(x="Países",y="Frequência")+ggtitle("Figura 1: Gráfico de colunas do número de mulheres medalistas")
 Figura1
 ####################################################################################
 ```
 
-Como pode ser observado na figura 1, o ranque é formado por Estados unidos, Rússia, China, Australia e Alemanha respectivamente. Os Estados Unidos ocupam o primeiro lugar do ranque com mais de 100 medalhas de diferença do segundo colocado, a Rússia, e com mais que o dobro de medalhas que a Australia e Alemanha, o quarto e o quinto colocado respectivamente. Juntos esses 5 países sozinhos tem 43,7% das mulheres medalistas.
+Como pode ser observado na figura 1, o ranque é formado por Estados unidos, Rússia, China, Australia e Alemanha respectivamente. Os Estados Unidos ocupam o primeiro lugar do ranque com mais de 100 mulheres medalistas de diferença do segundo colocado, a Rússia, e com mais que o dobro que a Australia e Alemanha, o quarto e o quinto colocado na devida ordem. Juntos esses 5 países sozinhos tem 43,7% das mulheres medalistas.
 
 ## IMC por esportes
 
-Essa análise tem como objetivo entender o comportamento do IMC nos esportes selecionados. Para tal, foram utilizadas as variáveis esporte e IMC,respectivamente qualitativa nominal e quantitativa continua. A variável IMC foi obtida dividindo o peso do atleta pela altura ao quadrado.O valor do índice de massa corporal(IMC) é um importante indicador da saúde de uma pessoa. O número representa o quanto a pessoa tem de massa muscular + massa de gordura + massa óssea. Para ilustrar as análises, serão utilizados um gráfico boxplot e um quadro de medidas resumo.
+Essa análise tem como objetivo entender o comportamento do IMC nos esportes selecionados. Para tal, foram utilizadas as variáveis esporte e IMC, respectivamente qualitativa nominal e quantitativa continua. A variável IMC foi obtida dividindo o Peso do atleta pela Altura ao quadrado. O valor do índice de massa corporal (IMC) é um importante indicador da saúde de uma pessoa, o número representa o quanto a pessoa tem de massa muscular + massa de gordura + massa óssea. Para ilustrar as análises, serão utilizados um gráfico boxplot e um quadro de medidas resumo.
 
 
 
 ```{r,echo=FALSE,message=FALSE, warning=FALSE}
-PM<-P[!(is.na(P[,9])),]
-PMD<-PM[!duplicated(PM$Nome),]
-PMD$IMC<-PMD$`Peso(kg)`/(PMD$`Altura(m)`)^2
-PA2<-PMD[PMD[,7]==c("Badminton","Judo","Gymnastics","Athletics","Football"),]
+PA2 <- filter(P,Esporte %in% c("Gymnastics","Football","Judo","Athletics","Badminton"))
+PA2<-PA2[!duplicated(PA2$Nome),]
+PA2$IMC<-PA2$`Peso(kg)`/(PA2$`Altura(m)`)^2
 PA2[c(PA2[,7]=="Athletics"),7]<-"Atletismo"
 PA2[c(PA2[,7]=="Gymnastics"),7]<-"Ginastica"
 PA2[c(PA2[,7]=="Football"),7]<-"Futebol"
@@ -315,14 +314,14 @@ ggplot(PA2)+aes(x=fct_reorder(Esporte, IMC, "median"),y=IMC)+geom_boxplot(fill =
 		\textbf{Estatística} & \textbf{Atletismo} & \textbf{Badminton} & \textbf{Futebol} & \textbf{Ginastica} & \textbf{Judo} 
 		\\
 		\midrule
-		Média & 22.44 & 21.97 & 22.72 & 21.51 & 26.33 \\
-		Desvio Padrão & 4.09 & 1.34 & 1.69 & 1.99 & 4.81 \\
-		Variância & 16.70 &  1.79 &  2.85 &  3.97 & 23.11 \\
-		Mínimo & 16.79 & 19.57 & 18.59 & 16.02 & 18.75 \\
-		1º Quartil & 20.06 & 21.10 & 21.70 & 20.52 & 22.14 \\
-		Mediana & 21.71 & 21.97 & 22.64 & 21.85 & 26.11 \\
-		3º Quartil & 23.74 & 22.67 & 23.84 & 22.65 & 28.56 \\
-		Máximo & 41.34 & 25.21 & 26.79 & 26.44 & 38.19 \\
+    Média & 22.38 & 22.18 & 22.57 & 20.68 & 25.61 \\
+		Desvio Padrão & 4.01 & 1.59 & 1.77 & 2.42 & 5.05 \\
+		Variância & 16.10 &  2.52 &  3.12 &  5.86 & 25.50 \\
+		Mínimo & 15.82 & 18.93 & 16.72 & 15.16 & 18.51 \\
+		1º Quartil & 20.01 & 21.22 & 21.41 & 18.63 & 22.05 \\
+		Mediana & 21.46 & 22.20 & 22.54 & 21.09 & 24.61 \\
+		3º Quartil & 23.67 & 23.23 & 23.76 & 22.48 & 27.37 \\
+		Máximo & 44.37 & 26.73 & 29.06 & 26.44 & 56.49 \\
 	\bottomrule
   	\end{tabular}
 	\label{quad:quadro_resumo1}
@@ -331,13 +330,13 @@ ggplot(PA2)+aes(x=fct_reorder(Esporte, IMC, "median"),y=IMC)+geom_boxplot(fill =
 
 Pode se observar pela figura 2 e o quadro 1 que o IMC segue um comportamento diferente para cada esporte. No judô há diversas categorias para pessoas com pesos diferentes e é um esporte que exige maior massa muscular, o que explica as medidas de variabilidade e as medidas de centralidade elevadas se comparadas com as dos outros esportes. 
  
-A Média, medida de centralidade, no Badminton, na Ginastica, no futebol e no Atletismo são semelhantes: 21.97, 21.51, 22.72 e 22.44 respectivamente, entretanto cada um tem uma configuração única. No atletismo há uma assimetria positiva enquanto na ginastica há uma assimetria negativa, ou seja, no atletismo há uma maior concentração na parte inferior da amostra e na ginastica há o contrário. Além disso, o atletismo tem o segundo maior desvio padrão(4.09), medida de variabilidade, que se deve ao fato dele possuir modalidades com diferentes exigências de massa muscular, desde salto com vara até arremeso de peso.
+A média, medida de centralidade, no Badminton, na Ginastica, no futebol e no Atletismo são semelhantes: 21.97, 21.51, 22.72 e 22.44,  respectivamente, entretanto cada um tem uma configuração única. No atletismo há uma assimetria positiva enquanto na ginastica há uma assimetria negativa, ou seja, no atletismo há uma maior concentração na parte inferior da amostra e na ginastica há o contrário. Além disso, o atletismo tem o segundo maior desvio padrão (4.09), medida de variabilidade, que se deve ao fato dele possuir modalidades com diferentes exigências de massa muscular, desde salto com vara até arremeso de peso.
 
-No badminton e no futebol as medianas e as médias, medidas de centralidade, juntas e próximas do centro da caixa além dos baixos valores dos desvios padrões(1.34 e 1.69 respectivamente), medida variabilidade,  mostram que esses esportes tem uma distribuição  simetrica e centralizada. Em geral, quanto mais um esporte ou modalidade exige massa muscular, maior o IMC.
+No badminton e no futebol as medianas e as médias, medidas de centralidade, juntas e próximas do centro da caixa além dos baixos valores dos desvios padrões (1.34 e 1.69 respectivamente), medida variabilidade,  mostram que esses esportes tem uma distribuição  simétrica e centralizada. Em geral, quanto mais um esporte ou modalidade exige massa muscular, maior o IMC.
 
 ## Top 3 medalhistas gerais
 
-Esta análise tem como objetivo observar quais são os 3 maiores medalhistas e verificar se há relação entre o medalhista e o tipo de medalha conquistada. Para isso, foram utilizadas as variáveis Nome e medalha, a primeira sendo qualitativa nominal e a segunda sendo qualitativa ordinal. Os três atletas que conquistaram mais medalhas nessas 5 edições dos jogos olímpicos foram: Michael Fred Phelps com 28 medalhas, Natalie Anne Coughlin e Ryan Steven Lochte ambos com 12 medalhas. Os três são estadunidenses e tem como esporte a natação. Para ilustrar a análise, foi utilizado um gráfico de barras.
+Esta análise tem como objetivo observar quais são os 3 maiores medalhistas e verificar se há relação entre o medalhista e o tipo de medalha conquistada. Para isso, foram utilizadas as variáveis Nome e Medalha, a primeira sendo qualitativa nominal e a segunda sendo qualitativa ordinal. Para ilustrar a análise, foi utilizado um gráfico de barras.
 
 
 
@@ -383,15 +382,16 @@ ggplot(GA3) +
                         pelo tipo da medalha")+scale_y_continuous(limits= c(0,25))
 ```
 
-Observa-se pelo gráfico a relação entre o atleta e o tipo de medalha. Conforme o valor da medalha aumentou, Natalie conquistou menos medalhas, enquanto para Michael e Ryan o comportamento foi o contrário. Também é possivel observar que a grande maioria das medalhas que Michael Fred Phelps conquistou foram medalhas de ouro, demostrando grande desempenho esportivo do atleta.
+Observa-se pelo gráfico a relação entre o atleta e o tipo de medalha. Os três atletas que conquistaram mais medalhas nessas 5 edições dos jogos olímpicos foram: Michael Fred Phelps com 28 medalhas, Natalie Anne Coughlin e Ryan Steven Lochte ambos com 12 medalhas. Os três são estadunidenses e tem como esporte a natação, que possui diversas modalidades e , consequentemente, várias oportunidades de se obter uma medalha. Conforme o valor da medalha aumentou, Natalie conquistou menos medalhas, enquanto para Michael e Ryan o comportamento foi o contrário. Também é possivel observar que a grande maioria das medalhas que Michael Fred Phelps conquistou foram medalhas de ouro, demostrando grande desempenho esportivo do atleta.
 
 ## Relação peso x altura
 
-Esta análise tem o intuito de compreender a relação entre o peso e a altura dos atletas. Para isso, foram utilizadas as variáveis peso(Kg) e altura(m), ambas são quantitativas continuas.O comportamento conjunto das variáveis está ilustrado pelo gráfico de dispersão a seguir.
+Esta análise tem o intuito de compreender a relação entre o peso e a altura dos atletas. Para isso, foram utilizadas as variáveis Peso(Kg) e Altura(m), ambas são quantitativas contínuas. O comportamento conjunto das variáveis está ilustrado pelo gráfico de dispersão a seguir.
 
 
 
 ```{r,echo=FALSE,message=FALSE, warning=FALSE}
+PMD<-P[!duplicated(P$Nome),]
 ggplot(PMD)+geom_point(aes(x=`Peso(kg)`,y=`Altura(m)`),colour = "#A11D21",size = 2,alpha=0.5)+theme_estat()+ggtitle("Figura 4: Gráfico de dispersão do peso pela altura do atleta")
 ```
 
@@ -399,54 +399,31 @@ ggplot(PMD)+geom_point(aes(x=`Peso(kg)`,y=`Altura(m)`),colour = "#A11D21",size =
 
 ```{=latex}
 \begin{quadro}[H]
-	\caption{Medidas resumo da variável peso do atleta}
+	\caption{Medidas resumo da variável peso e altura do atleta}
 	\centering
-	\begin{tabular}{ | l | c |}
+	\begin{tabular}{|l|c|c|}
 	\toprule
-		\textbf{Estatística} & \textbf{Valor}
-\\
+		\textbf{Estatística} & \textbf{Peso} & \textbf{Altura} \\
 		\midrule
-		Média & 74.14 \\
-		Desvio Padrão & 16.25 \\
-		Variância & 264.05 \\
-		Mínimo & 28 \\
-		1º Quartil & 62.99 \\
-		Mediana & 71.99 \\
-		3º Quartil & 83.99 \\
-		Máximo & 174.97 \\
+		Média & 74.14 & 1.78 \\
+		Desvio Padrão & 16.25 & 0.12 \\
+		Variância & 264.05 & 0.01 \\
+		Mínimo & 28 & 1.37 \\
+		1º Quartil & 62.99 & 1.7 \\
+		Mediana & 71.99 & 1.78 \\
+		3º Quartil & 83.99 & 1.86 \\
+		Máximo & 174.97 & 2.19 \\
 	\bottomrule
   	\end{tabular}
-	\label{quad:quadro_resumo1}
-\end{quadro}
-\begin{quadro}[H]
-	\caption{Medidas resumo
-da variável altura do atleta}
-	\centering
-	\begin{tabular}{ | l | c |}
-	\toprule
-		\textbf{Estatística} & \textbf{Valor}
-\\
-		\midrule
-		Média & 1.78 \\
-		Desvio Padrão & 0.12 \\
-		Variância & 0.01 \\
-		Mínimo & 1.37 \\
-		1º Quartil & 1.7 \\
-		Mediana & 1.78 \\
-		3º Quartil & 1.86 \\
-		Máximo & 2.19 \\
-	\bottomrule
-  	\end{tabular}
-	\label{quad:quadro_resumo1}
 \end{quadro}
 ```
 
 
-Os atletas têm, em geral, peso entre 63 e 84 quilos e altura entre 1.70 e 1.86 metros. Além disso o peso dos atletas varia mais que a altura(coeficiente de variação 21% e 6% respectivamente) . O coeficiente de Pearson, que mostra a força e o sentido da associação de duas variaveis quantitativas e varia de -1 a 1, assumiu o valor 0.79, ou seja, observa se pelo gráfico e pelo coeficiente uma relação forte e positiva entre as variáveis, conforme a altura aumenta o peso tende a aumentar.
+Observa-se pela figura 4 e pelo quadro 2 o comportamento das duas variáveis. Os atletas têm, em geral, peso entre 63 e 84 quilos e altura entre 1.70 e 1.86 metros. Além disso o peso dos atletas varia mais que a altura (coeficiente de variação 21% e 6% respectivamente). O coeficiente de Pearson, que mostra a força e o sentido da associação de duas variaveis quantitativas e varia de -1 a 1, assumiu o valor 0.79, ou seja, observa se pelo gráfico e pelo coeficiente uma relação forte e positiva entre as variáveis, conforme a altura aumenta o peso tende a aumentar.
 
 # Conclusões
 
-Os resultados das análises evidenciam aspectos importantes sobre os atletas. Observou-se que Estados unidos, Rússia, China, Australia e Alemanha são os países com maior número de mulheres medalhistas, com os Estados Unidos bem a frente dos demais. Em paralelo, constatou-se que os três atletas que conquistaram mais medalhas nessas 5 edições dos jogos olímpicos, Michael Fred Phelps, Natalie Anne Coughlin e Ryan Steven Lochte são estadunidenses. Dentre os três, destaca-se Michael Phelps com 28 medalhas das quais 23 são de ouro, quase a mesma quantidade de todas as medalhas de Natalie e Ryan somadas.
+Os resultados das análises evidenciam aspectos importantes sobre os atletas. Observou-se que Estados unidos, Rússia, China, Australia e Alemanha são os países com maior número de mulheres medalhistas, com os Estados Unidos bem a frente dos demais. Em paralelo, constatou-se que os três atletas que conquistaram mais medalhas nessas 5 edições dos jogos olímpicos, Michael Fred Phelps, Natalie Anne Coughlin e Ryan Steven Lochte são estadunidenses e tem como esporte a natação, que possui diversas modalidades e , consequentemente, várias oportunidades de se obter uma medalha.. Dentre os três, destaca-se Michael Phelps com 28 medalhas das quais 23 são de ouro, quase a mesma quantidade de todas as medalhas de Natalie e Ryan somadas.
 
-Além disso, as análises mostraram que o IMC dos atletas tem grande relação com o esporte que eles praticam. Em geral, quanto mais um esporte ou modalidade exige massa muscular, maior é o IMC. Também se constatou que o peso e a altura dos atletas tem uma relação forte e positiva, ou seja, conforme a altura aumenta o peso tende a aumentar.
+Além disso, pode se observar que, em média, os atletas que praticam ginástica, futebol, judô, atletismo e badminton têm IMC igual a 22, que indica eutrofia. As análises mostraram que o IMC dos atletas tem grande relação com o esporte que eles praticam. Em geral, quanto mais um esporte ou modalidade exige massa muscular, maior é o IMC. Os atletas têm, em geral, peso entre 63 e 84 quilos e altura entre 1.70 e 1.86 metros. Também se constatou que o peso e a altura dos atletas tem uma relação forte e positiva, ou seja, conforme a altura aumenta o peso tende a aumentar.
 

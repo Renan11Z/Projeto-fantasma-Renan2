@@ -147,14 +147,20 @@ Pd<-P[!duplicated(P$Nome),]
 length(Pd$Sexo=="F")
 ###########Análise 2##############################
 PMD<-P[!duplicated(P$Nome),]
-PMD$IMC<-PMD$`Peso(kg)`/(PMD$`Altura(m)`)^2
-PA2<-PMD[PMD[,7]==c("Badminton","Judo","Gymnastics","Athletics","Football"),]
+#PMD$IMC<-PMD$`Peso(kg)`/(PMD$`Altura(m)`)^2
+PA2 <- filter(P,Esporte %in% c("Gymnastics",
+                                                         "Football","Judo",
+                                                         "Athletics",
+                                                         "Badminton"))
+PA2<-PA2[!duplicated(PA2$Nome),]
+####Não funciona#####PA2<-PMD[PMD[,7]==c("Badminton","Judo","Gymnastics","Athletics","Football"),]
 PA2[c(PA2[,7]=="Athletics"),7]<-"Atletismo"
 PA2[c(PA2[,7]=="Gymnastics"),7]<-"Ginastica"
 PA2[c(PA2[,7]=="Football"),7]<-"Futebol"
+PA2$IMC<-PA2$`Peso(kg)`/(PA2$`Altura(m)`)^2
 ggplot(PA2, aes(x = fct_reorder(Esporte, IMC, median),y=IMC))+geom_boxplot(fill = c("#A11D21"), width = 0.5)+theme_estat()+stat_summary(fun = "mean", geom = "point", shape = 23, size = 3, fill = "white")+xlab("Esporte")
 round(mean(PA2[PA2[,7]=="Judo",]$IMC,na.rm = T),digits = 2)
-PA2%>%group_by(Esporte)%>%print_quadro_resumo(var_name = IMC)
+PA21%>%group_by(Esporte)%>%print_quadro_resumo(var_name = IMC)
 modelo<-lm(PA2$IMC~PA2$Esporte)                 
 summary(modelo)
 round(sd(PA2[PA2[,7]=="Judo",]$IMC,na.rm = T),digits = 2)
